@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Generate PWA Icons</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 20px;
+    }
+    canvas {
+      border: 1px solid #ccc;
+      margin: 10px;
+    }
+    button {
+      padding: 10px 20px;
+      margin: 10px;
+      background: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>Generate PWA Icons for FixIt AI</h1>
+  <p>Click the buttons below to generate and download the icons. Then place them in the <code>public</code> folder.</p>
+  
+  <div>
+    <canvas id="icon192" width="192" height="192"></canvas>
+    <canvas id="icon512" width="512" height="512"></canvas>
+  </div>
+  
+  <div>
+    <button onclick="generateIcon(192)">Generate 192x192</button>
+    <button onclick="generateIcon(512)">Generate 512x512</button>
+    <button onclick="downloadIcon(192)">Download 192x192</button>
+    <button onclick="downloadIcon(512)">Download 512x512</button>
+  </div>
+
+  <script>
+    function generateIcon(size) {
+      const canvas = document.getElementById(`icon${size}`);
+      const ctx = canvas.getContext('2d');
+      
+      // Background
+      const gradient = ctx.createLinearGradient(0, 0, size, size);
+      gradient.addColorStop(0, '#2563eb');
+      gradient.addColorStop(1, '#1d4ed8');
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, size, size);
+      
+      // Draw a simple hammer/tool icon
+      ctx.fillStyle = 'white';
+      ctx.strokeStyle = 'white';
+      ctx.lineWidth = size / 20;
+      
+      // Hammer head
+      const centerX = size / 2;
+      const centerY = size / 2;
+      const hammerSize = size * 0.3;
+      
+      // Hammer handle
+      ctx.beginPath();
+      ctx.moveTo(centerX - hammerSize * 0.3, centerY - hammerSize * 0.5);
+      ctx.lineTo(centerX + hammerSize * 0.3, centerY + hammerSize * 0.5);
+      ctx.stroke();
+      
+      // Hammer head (rectangle)
+      ctx.fillRect(
+        centerX - hammerSize * 0.2,
+        centerY - hammerSize * 0.6,
+        hammerSize * 0.4,
+        hammerSize * 0.3
+      );
+      
+      // Sparkles effect
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+      for (let i = 0; i < 3; i++) {
+        const angle = (Math.PI * 2 * i) / 3;
+        const x = centerX + Math.cos(angle) * hammerSize * 0.8;
+        const y = centerY + Math.sin(angle) * hammerSize * 0.8;
+        ctx.beginPath();
+        ctx.arc(x, y, size / 30, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+    
+    function downloadIcon(size) {
+      const canvas = document.getElementById(`icon${size}`);
+      const link = document.createElement('a');
+      link.download = `icon-${size}.png`;
+      link.href = canvas.toDataURL();
+      link.click();
+    }
+    
+    // Generate icons on load
+    window.onload = () => {
+      generateIcon(192);
+      generateIcon(512);
+    };
+  </script>
+</body>
+</html>
+
