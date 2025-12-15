@@ -1,12 +1,15 @@
 import React, { useState, useRef } from 'react';
-import { Camera, Upload, CheckCircle, ArrowRight, RotateCcw, AlertTriangle, Hammer, Download, X, Sparkles, Shield } from 'lucide-react';
+import { Camera, Upload, CheckCircle, ArrowRight, RotateCcw, AlertTriangle, Hammer, Download, X, Sparkles, Shield, LogOut, User } from 'lucide-react';
 import { AppStep, ImageFile } from './types';
 import { generateFix } from './services/geminiService';
 import { Button } from './components/Button';
 import { BeforeAfterSlider } from './components/BeforeAfterSlider';
 import Admin from './components/Admin';
+import Auth from './components/Auth';
+import { useAuth } from './contexts/AuthContext';
 
 const App: React.FC = () => {
+  const { user, loading, signOut } = useAuth();
   const [currentView, setCurrentView] = useState<'app' | 'admin'>('app');
   const [step, setStep] = useState<AppStep>(AppStep.UPLOAD);
   const [originalImage, setOriginalImage] = useState<ImageFile | null>(null);
@@ -81,6 +84,26 @@ const App: React.FC = () => {
     }
   };
 
+  // Show loading state while checking authentication
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="relative w-16 h-16 mx-auto mb-4">
+            <div className="absolute inset-0 border-4 border-slate-200 rounded-full"></div>
+            <div className="absolute inset-0 border-4 border-blue-600 rounded-full border-t-transparent animate-spin"></div>
+          </div>
+          <p className="text-slate-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show auth screen if not logged in
+  if (!user) {
+    return <Auth />;
+  }
+
   // If admin view is active, render Admin component
   if (currentView === 'admin') {
     return <Admin onBack={() => setCurrentView('app')} />;
@@ -101,13 +124,28 @@ const App: React.FC = () => {
             <div className="text-xs font-medium text-slate-400 bg-slate-100 px-3 py-1 rounded-full">
               Repair & Cleanup Visualizer
             </div>
+            <div className="flex items-center space-x-2 text-sm text-slate-600">
+              <User size={16} />
+              <span className="hidden sm:inline">{user.email}</span>
+            </div>
             <button
               onClick={() => setCurrentView('admin')}
               className="flex items-center space-x-2 px-3 py-1.5 text-sm font-medium text-slate-700 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors"
               aria-label="Open Admin Panel"
             >
               <Shield size={16} />
-              <span>Admin</span>
+              <span className="hidden sm:inline">Admin</span>
+            </button>
+            <button
+              onClick={async () => {
+                await signOut();
+                setCurrentView('app');
+              }}
+              className="flex items-center space-x-2 px-3 py-1.5 text-sm font-medium text-slate-700 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+              aria-label="Sign Out"
+            >
+              <LogOut size={16} />
+              <span className="hidden sm:inline">Sign Out</span>
             </button>
           </div>
         </div>

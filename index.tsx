@@ -1,6 +1,7 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App';
+import { AuthProvider } from './contexts/AuthContext';
 
 // Register service worker for PWA
 if ('serviceWorker' in navigator) {
@@ -23,6 +24,8 @@ if (!rootElement) {
 const root = createRoot(rootElement);
 root.render(
   <React.StrictMode>
-    <App />
+    <AuthProvider>
+      <App />
+    </AuthProvider>
   </React.StrictMode>
 );

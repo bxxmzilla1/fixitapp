@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
-import { Settings, Shield, BarChart3, Users, Activity, ArrowLeft, Database, Key, Server } from 'lucide-react';
+import { Settings, Shield, BarChart3, Users, Activity, ArrowLeft, Database, Key, Server, LogOut, User } from 'lucide-react';
 import { Button } from './Button';
+import { useAuth } from '../contexts/AuthContext';
 
 interface AdminProps {
   onBack: () => void;
 }
 
 const Admin: React.FC<AdminProps> = ({ onBack }) => {
+  const { user, signOut } = useAuth();
   const [activeTab, setActiveTab] = useState<'overview' | 'settings' | 'analytics'>('overview');
 
   return (
@@ -28,6 +30,23 @@ const Admin: React.FC<AdminProps> = ({ onBack }) => {
               </div>
               <span className="font-bold text-xl text-slate-800">Admin Panel</span>
             </div>
+          </div>
+          <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-2 text-sm text-slate-600">
+              <User size={16} />
+              <span className="hidden sm:inline">{user?.email}</span>
+            </div>
+            <button
+              onClick={async () => {
+                await signOut();
+                onBack();
+              }}
+              className="flex items-center space-x-2 px-3 py-1.5 text-sm font-medium text-slate-700 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+              aria-label="Sign Out"
+            >
+              <LogOut size={16} />
+              <span className="hidden sm:inline">Sign Out</span>
+            </button>
           </div>
         </div>
       </header>
