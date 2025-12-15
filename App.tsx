@@ -1,11 +1,13 @@
 import React, { useState, useRef } from 'react';
-import { Camera, Upload, CheckCircle, ArrowRight, RotateCcw, AlertTriangle, Hammer, Download, X, Sparkles } from 'lucide-react';
+import { Camera, Upload, CheckCircle, ArrowRight, RotateCcw, AlertTriangle, Hammer, Download, X, Sparkles, Shield } from 'lucide-react';
 import { AppStep, ImageFile } from './types';
 import { generateFix } from './services/geminiService';
 import { Button } from './components/Button';
 import { BeforeAfterSlider } from './components/BeforeAfterSlider';
+import Admin from './components/Admin';
 
 const App: React.FC = () => {
+  const [currentView, setCurrentView] = useState<'app' | 'admin'>('app');
   const [step, setStep] = useState<AppStep>(AppStep.UPLOAD);
   const [originalImage, setOriginalImage] = useState<ImageFile | null>(null);
   const [prompt, setPrompt] = useState<string>('');
@@ -79,6 +81,11 @@ const App: React.FC = () => {
     }
   };
 
+  // If admin view is active, render Admin component
+  if (currentView === 'admin') {
+    return <Admin onBack={() => setCurrentView('app')} />;
+  }
+
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
       {/* Header */}
@@ -90,8 +97,18 @@ const App: React.FC = () => {
             </div>
             <span className="font-bold text-xl text-slate-800 tracking-tight">FixIt AI</span>
           </div>
-          <div className="text-xs font-medium text-slate-400 bg-slate-100 px-3 py-1 rounded-full">
-            Repair & Cleanup Visualizer
+          <div className="flex items-center space-x-3">
+            <div className="text-xs font-medium text-slate-400 bg-slate-100 px-3 py-1 rounded-full">
+              Repair & Cleanup Visualizer
+            </div>
+            <button
+              onClick={() => setCurrentView('admin')}
+              className="flex items-center space-x-2 px-3 py-1.5 text-sm font-medium text-slate-700 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors"
+              aria-label="Open Admin Panel"
+            >
+              <Shield size={16} />
+              <span>Admin</span>
+            </button>
           </div>
         </div>
       </header>
